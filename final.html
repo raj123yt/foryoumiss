@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>My Love 💖</title>
+
+<style>
+  body {
+    margin: 0;
+    height: 100vh;
+    overflow: hidden;
+    background: #c50142; /* Dark night background for fireworks */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Poppins', sans-serif;
+    color: white;
+    text-align: center;
+    flex-direction: column;
+  }
+
+  /* Fireworks canvas */
+  canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;
+  }
+
+  .gif-container {
+    margin-bottom: 20px;
+    z-index: 10;
+    position: relative;
+  }
+
+  .gif-container img {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 50%;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+    animation: float 2s ease-in-out infinite alternate;
+  }
+
+  @keyframes float {
+    from { transform: translateY(0); }
+    to { transform: translateY(-10px); }
+  }
+
+  .final-message {
+    max-width: 500px;
+    background: rgba(238, 3, 140, 0.034);
+    padding: 40px;
+    border-radius: 25px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    animation: fadeIn 1.5s ease forwards;
+    z-index: 10;
+    position: relative;
+  }
+
+  .final-message h1 {
+    font-size: 36px;
+    margin-bottom: 20px;
+    color: #fff;
+    animation: heartGlow 1.5s ease infinite alternate;
+  }
+
+  .final-message p {
+    font-size: 20px;
+    line-height: 1.6;
+    color: #fafafa;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes heartGlow {
+    from { text-shadow: 0 0 5px #ff4d6d, 0 0 10px #ff4d6d; }
+    to { text-shadow: 0 0 20px #ff7eb3, 0 0 30px #ff7eb3; }
+  }
+</style>
+</head>
+
+<body>
+
+<!-- Fireworks Canvas -->
+<canvas id="fireworks"></canvas>
+
+<!-- GIF on top -->
+<div class="gif-container">
+  <img src="https://i.pinimg.com/originals/73/53/3f/73533f7b2d23f71baa0fd4febd338090.gif" alt="Love GIF">
+</div>
+
+<div class="final-message">
+  <h1>💖 HEY, SWEETIE 💖</h1>
+  <p>
+    Mujhe Achha Lagta hai Jab Tum Mujhse Baat karti ho<br>
+    Chhere Par Ek Hasi Aa Jati Hai.<br>
+    Me Ye to Nahi Janta Apko Kaisa Lagta hai Mere satha, Par Mujhe Bohot Achha Lagta hai <br>
+    Jadya Bak Bak Nahi Karuga, Birthday Mubarkh 💕
+  </p>
+</div>
+
+<script>
+// Fireworks JS
+const canvas = document.getElementById('fireworks');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const fireworks = [];
+const particles = [];
+
+function random(min, max) {
+  return Math.random() * (max - min) + min;
+}
+
+class Firework {
+  constructor(x, y, targetY) {
+    this.x = x;
+    this.y = y;
+    this.targetY = targetY;
+    this.speed = random(3, 7);
+    this.exploded = false;
+    this.color = `hsl(${random(0,360)},100%,60%)`;
+  }
+  update() {
+    this.y -= this.speed;
+    if(this.y <= this.targetY && !this.exploded) {
+      this.explode();
+      this.exploded = true;
+    }
+  }
+  explode() {
+    const count = random(20, 50);
+    for(let i=0;i<count;i++){
+      particles.push(new Particle(this.x, this.y, this.color));
+    }
+  }
+  draw() {
+    if(!this.exploded){
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, 3, 0, Math.PI*2);
+      ctx.fillStyle = this.color;
+      ctx.fill();
+    }
+  }
+}
+
+class Particle {
+  constructor(x, y, color) {
+    this.x = x;
+    this.y = y;
+    this.color = color;
+    this.speed = random(1,5);
+    this.angle = random(0, Math.PI*2);
+    this.alpha = 1;
+    this.decay = random(0.01,0.03);
+  }
+  update() {
+    this.x += Math.cos(this.angle)*this.speed;
+    this.y += Math.sin(this.angle)*this.speed;
+    this.alpha -= this.decay;
+  }
+  draw() {
+    ctx.globalAlpha = this.alpha;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, 2,0,Math.PI*2);
+    ctx.fillStyle = this.color;
+    ctx.fill();
+    ctx.globalAlpha = 1;
+  }
+}
+
+function animate(){
+  requestAnimationFrame(animate);
+  ctx.fillStyle = 'rgba(26,26,26,0.2)';
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  if(Math.random() < 0.05){
+    fireworks.push(new Firework(random(0,canvas.width),canvas.height, random(50,canvas.height/2)));
+  }
+
+  fireworks.forEach((f,i)=>{
+    f.update();
+    f.draw();
+    if(f.exploded){
+      fireworks.splice(i,1);
+    }
+  });
+
+  particles.forEach((p,i)=>{
+    p.update();
+    p.draw();
+    if(p.alpha <= 0) particles.splice(i,1);
+  });
+}
+
+animate();
+
+// Handle resize
+window.addEventListener('resize',()=>{
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+});
+</script>
+
+</body>
+</html>
