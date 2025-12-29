@@ -115,6 +115,11 @@
 
 <body>
 
+<!-- 🎵 Background Music -->
+<audio id="bgMusic" loop>
+  <source src="happy-birthday-lofi-version-222774.mp3" type="audio/mp3">
+</audio>
+
 <div class="card-container">
   <div class="card" onclick="openCard()">
 
@@ -130,7 +135,7 @@
 
       <div class="heart">❤️</div>
       <h2>ARE YOU READY ?</h2>
-      <p>"NO" KE UPAR CLICK MAT KARNA, KYUNKI MENE USKE KIYE KOI CODE NAHI LIKHA HAI✨</p>
+      <p>"NO" KE UPAR CLICK MAT KARNA, KYUNKI MENE USKE KIYE KOI CODE NAHI LIKHA HAI ✨</p>
 
       <div class="buttons">
         <button class="yes" onclick="yesClick(event)">YES 💖</button>
@@ -144,11 +149,17 @@
 <script>
   function openCard() {
     document.querySelector('.card').classList.add('open');
+
+    const music = document.getElementById("bgMusic");
+    music.play().catch(() => {
+      console.log("Autoplay blocked until user interaction");
+    });
   }
 
   function goBack(e) {
     e.stopPropagation();
     document.querySelector('.card').classList.remove('open');
+    document.getElementById("bgMusic").pause();
   }
 
   function yesClick(e) {
